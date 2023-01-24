@@ -1,6 +1,16 @@
 from dataclasses import dataclass
-
 from environs import Env
+from pydantic import BaseSettings, SecretStr
+
+class Settings(BaseSettings):
+    bot_token: SecretStr
+    bot_admin_ids: list[int]
+    use_redis: bool
+
+
+    class Config:
+        env_file = '../.env'
+        env_file_encoding = 'utf-8'
 
 
 @dataclass
@@ -37,7 +47,7 @@ def load_config(path: str = None):
     return Config(
         tg_bot=TgBot(
             token=env.str("BOT_TOKEN"),
-            admin_ids=list(map(int, env.list("ADMINS"))),
+            admin_ids=list(map(int, env.list("BOT_ADMINS"))),
             use_redis=env.bool("USE_REDIS"),
         ),
         db=DbConfig(
