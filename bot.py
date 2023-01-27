@@ -4,7 +4,8 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from tgbot.config import load_config
+from tgbot.config import Config
+
 from tgbot.handlers.admin import admin_router
 from tgbot.handlers.echo import echo_router
 from tgbot.handlers.user import user_router
@@ -29,10 +30,9 @@ async def main():
         format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
     )
     logger.info("Starting bot")
-    config = load_config(".env")
 
     storage = MemoryStorage()
-    bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
+    bot = Bot(token=Config.bot_token.get_secret_value(), parse_mode='HTML')
     dp = Dispatcher(storage=storage)
 
     for router in [
@@ -42,9 +42,9 @@ async def main():
     ]:
         dp.include_router(router)
 
-    register_global_middlewares(dp, config)
+    register_global_middlewares(dp, Config)
 
-    await on_startup(bot, config.tg_bot.admin_ids)
+    await on_startup(bot, Config.bot_admins)
     await dp.start_polling(bot)
 
 
