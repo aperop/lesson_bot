@@ -34,6 +34,7 @@ async def main():
     storage = MemoryStorage()
     bot = Bot(token=Config.bot_token.get_secret_value(), parse_mode='HTML')
     dp = Dispatcher(storage=storage)
+    await bot.delete_webhook(drop_pending_updates=True)
 
     for router in [
         admin_router,
